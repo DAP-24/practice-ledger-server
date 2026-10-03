@@ -6,11 +6,11 @@
   "ntfy_topic": "",
   "home_postcode": "WD6",
   "notify_on_zero_results": true,
-  "default_radius_miles": 20,
+  "default_radius_miles": 30,
   "search_profiles": {
     "Audit": {
       "keywords": "accounting practice audit director",
-      "radius_miles": 20,
+      "radius_miles": 30,
       "min_salary": null,
       "max_salary": null,
       "include_remote_hybrid": true,
@@ -25,7 +25,7 @@
     },
     "General Practice": {
       "keywords": "accounting practice general practice director",
-      "radius_miles": 20,
+      "radius_miles": 30,
       "min_salary": null,
       "max_salary": null,
       "include_remote_hybrid": true,
