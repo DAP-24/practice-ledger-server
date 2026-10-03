@@ -1,64 +1,38 @@
 """
-Run this on a schedule (e.g. via Windows Task Scheduler, once a day) to
-check for new matches automatically, without opening the app.
+Runs one named search profile — called by this package's GitHub Actions
+workflows (see .github/workflows/), either automatically on a daily
+schedule or manually via "Run workflow" on GitHub's website or mobile
+app. This is the server package's own copy, independent from the
+desktop app's version of this same file (which instead runs via Windows
+Task Scheduler) — see this package's own README, not the desktop app's.
 
-Two ways to run it:
+Usage:
+    python scheduled_search.py "Audit"
+    python scheduled_search.py "General Practice"
 
-1. No argument — reuses whatever filters you last ran a search with in
-   the web UI (stored in settings.json under "last_search_params"). This
-   is the original, simplest behaviour: set your filters up in the app,
-   run one search there, and this script keeps using the same ones.
+Each named profile (saved under settings.json's "search_profiles") gets
+its own independent "have I seen this before" tracking, its own
+summary-file naming, its own results page (see below), and its own
+notification title — so the two never interfere with each other.
 
-       python scheduled_search.py
-
-2. With a profile name — reuses a named, SAVED search configuration
-   instead (stored under settings.json's "search_profiles", saved from
-   the app via the "Save as profile" control). Use this to run more than
-   one distinct search daily without them overwriting each other — e.g.
-   one profile with "Audit" ticked, another with "General practice"
-   ticked, so a role that only matches one of them is never missed by
-   running just a single combined search.
-
-       python scheduled_search.py "Audit"
-       python scheduled_search.py "General Practice"
-
-   Each named profile gets its own independent "have I seen this before"
-   tracking, its own summary-file naming, and its own notification
-   title — so the two runs never interfere with each other, and you can
-   always tell which one found what.
+Running with no profile name at all reuses whatever's saved under
+"last_search_params" instead, for parity with the desktop app's own
+fallback behaviour — but every setup described in this package's README
+uses a named profile, since that's what the two workflow files expect.
 
 Writes a summary file to the summaries/ folder listing anything new since
-the last run. If nothing's new, it still writes a short file saying so,
-so you can tell the script actually ran.
+the last run, and (if GitHub Pages is enabled per the README) updates a
+simple read-only results page under docs/ that you can view from any
+browser, including your phone, without needing to open a file directly.
 
-Optional: if a "ntfy_topic" is set in Settings, also sends a push
-notification to your phone via ntfy.sh (free, no account needed) whenever
-there's at least one genuinely new match. If "notify_on_zero_results" is
-also on (the default), a second, distinct "checked, nothing new" push is
-sent on days with nothing new too — see the README for both.
-
-Setting this up in Windows Task Scheduler, for a single (unnamed) daily
-search — the easy way:
-    1. Open Task Scheduler (search for it in the Start menu)
-    2. Create Basic Task -> name it "Practice Ledger daily check"
-    3. Trigger: Daily, pick a time (e.g. 7:00 AM)
-    4. Action: "Start a program"
-       - Program/script: the full path to "Run Scheduled Search.bat" in
-         this same folder, e.g.
-         C:\\Users\\you\\Desktop\\jobsearch\\Run Scheduled Search.bat
-       - Leave "Add arguments" and "Start in" blank — the .bat file
-         handles finding its own folder itself, so there's nothing else
-         to configure.
-    5. Finish. It'll now run automatically at that time each day, and
-       write to scheduled_search_log.txt in this folder if you ever want
-       to check it actually ran (Task Scheduler runs it invisibly).
-
-For running TWO NAMED PROFILES daily (e.g. "Audit" and "General
-Practice"), see the README section "Running more than one daily search"
-— it uses two ready-made launcher files instead, one per profile, so
-Task Scheduler still only ever needs one field filled in per task.
+Optional: if a "ntfy_topic" is set, also sends a push notification via
+ntfy.sh whenever there's at least one genuinely new match, and (if
+"notify_on_zero_results" is on, the default) a second, distinct "checked,
+nothing new" push on days with nothing new too.
 """
 
+import html
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -67,6 +41,101 @@ import search_core as core
 
 BASE_DIR = Path(__file__).resolve().parent
 SUMMARIES_DIR = BASE_DIR / "summaries"
+DOCS_DIR = BASE_DIR / "docs"
+
+
+def generate_results_html(results, profile_name, generated_at):
+    """A simple, read-only static HTML page listing results — for GitHub
+    Pages, viewable from any browser including your phone, with no
+    server or dashboard needed (GitHub just serves this file as-is). Not
+    interactive — no live search, no changing filters here; see the
+    README for that trade-off and how to change settings instead."""
+    sorted_results = sorted(results, key=lambda r: -(r.get("fit_score") or 0))
+
+    def esc(text):
+        return html.escape(str(text)) if text is not None else ""
+
+    rows = []
+    for r in sorted_results:
+        tags = []
+        if r.get("is_new"):
+            tags.append('<span class="tag new">NEW</span>')
+        if r.get("ri_progression_offered"):
+            tags.append('<span class="tag">RI training offered</span>')
+        tier = r.get("partnership_timeline_tier")
+        if tier == "fast":
+            tags.append('<span class="tag new">Partner &lt;12mo</span>')
+        elif tier == "medium":
+            tags.append('<span class="tag">Partner 12-18mo</span>')
+        elif tier == "slow":
+            tags.append('<span class="tag warn">Partner 2yrs+</span>')
+
+        if r.get("salary_listed"):
+            min_s, max_s = r.get("minimum_salary"), r.get("maximum_salary")
+            salary = f"£{min_s:,}" if min_s == max_s else f"£{min_s:,}–£{max_s:,}"
+        else:
+            salary = "Not listed"
+
+        if r.get("remote_or_hybrid"):
+            distance = "Remote/hybrid"
+        elif r.get("distance_miles") is not None:
+            distance = f"{r['distance_miles']} mi"
+        else:
+            distance = "Unknown"
+
+        job_url = r.get("job_url") or "#"
+        rows.append(f"""
+        <tr>
+          <td data-label="Role"><a href="{esc(job_url)}" target="_blank" rel="noopener">{esc(r.get('job_title'))}</a>
+              <div class="tags">{' '.join(tags)}</div></td>
+          <td data-label="Employer">{esc(r.get('employer_name') or '—')}</td>
+          <td data-label="Location">{esc(r.get('location_name') or '—')}</td>
+          <td data-label="Distance">{esc(distance)}</td>
+          <td data-label="Salary">{esc(salary)}</td>
+          <td data-label="Fit">{esc(r.get('fit_score', 0))}</td>
+          <td data-label="Source">{esc(r.get('source'))}</td>
+        </tr>""")
+
+    table_body = "\n".join(rows) if rows else '<tr><td colspan="7">No matching roles right now.</td></tr>'
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Practice Ledger — {esc(profile_name)}</title>
+<style>
+  body {{ font-family: -apple-system, Segoe UI, Arial, sans-serif; margin: 0; padding: 16px; background: #faf8f3; color: #1f1b16; }}
+  h1 {{ font-size: 20px; margin-bottom: 4px; }}
+  .meta {{ color: #6b6258; font-size: 13px; margin-bottom: 16px; }}
+  table {{ border-collapse: collapse; width: 100%; font-size: 14px; }}
+  th, td {{ text-align: left; padding: 8px 10px; border-bottom: 1px solid #e4ddd0; vertical-align: top; }}
+  th {{ background: #efe9dd; position: sticky; top: 0; }}
+  a {{ color: #8a6d3b; text-decoration: underline; }}
+  .tags {{ margin-top: 4px; }}
+  .tag {{ display: inline-block; font-size: 11px; border: 1px solid #c9bfa8; border-radius: 3px; padding: 1px 6px; margin-right: 4px; color: #6b6258; }}
+  .tag.new {{ background: #2f5d3a; color: #fff; border-color: #2f5d3a; }}
+  .tag.warn {{ color: #a33; border-color: #a33; }}
+  @media (max-width: 600px) {{
+    table, thead, tbody, th, td, tr {{ display: block; }}
+    thead {{ display: none; }}
+    tr {{ margin-bottom: 14px; border: 1px solid #e4ddd0; border-radius: 6px; padding: 8px; }}
+    td {{ border: none; padding: 3px 0; }}
+    td:before {{ content: attr(data-label); font-weight: 600; display: block; font-size: 11px; color: #6b6258; }}
+  }}
+</style>
+</head>
+<body>
+  <h1>Practice Ledger — {esc(profile_name)}</h1>
+  <p class="meta">Last updated: {esc(generated_at)} &middot; {len(sorted_results)} matching role(s) &middot;
+     read-only (see the repository's README to change search settings)</p>
+  <table>
+    <thead><tr><th>Role</th><th>Employer</th><th>Location</th><th>Distance</th><th>Salary</th><th>Fit</th><th>Source</th></tr></thead>
+    <tbody>{table_body}</tbody>
+  </table>
+</body>
+</html>
+"""
 
 
 def format_summary(results, new_count, site_status, params, profile_name=None):
@@ -166,6 +235,18 @@ def main():
     # home postcode, never a one-off "search from" location.
     params.pop("search_from_override", None)
 
+    # One-off radius override, only ever present when manually triggered
+    # from GitHub's "Run workflow" button with a value typed in — see the
+    # workflow file's workflow_dispatch inputs. A scheduled (automatic)
+    # run never sets this, so it silently does nothing then, leaving the
+    # profile's own saved radius_miles exactly as committed in settings.json.
+    radius_override = os.environ.get("RADIUS_OVERRIDE_MILES", "").strip()
+    if radius_override:
+        try:
+            params["radius_miles"] = int(radius_override)
+        except ValueError:
+            print(f"Ignoring invalid radius override {radius_override!r} (expected a whole number of miles) — using the profile's saved radius instead.")
+
     if not settings.get("reed_api_key"):
         print("No Reed API key saved. Add one in the app's Settings first.")
         sys.exit(1)
@@ -195,8 +276,18 @@ def main():
         counter += 1
     summary_path.write_text(format_summary(results, new_count, site_status, params, profile_name), encoding="utf-8")
 
+    # Also update this profile's results page, if GitHub Pages is set up
+    # (see the README) — overwrites the same file each run, so it always
+    # shows the latest results rather than growing forever like summaries/.
+    DOCS_DIR.mkdir(exist_ok=True)
+    page_name = core.PROFILE_NAME_SAFE_RE.sub("-", profile_name.strip().lower()).strip("-") if profile_name else "results"
+    page_path = DOCS_DIR / f"{page_name}.html"
+    generated_at = datetime.now().strftime("%A %d %B %Y, %H:%M")
+    page_path.write_text(generate_results_html(results, profile_name or "Search", generated_at), encoding="utf-8")
+
     print(f"Done. {new_count} new match(es) out of {len(results)} total.")
     print(f"Summary written to: {summary_path}")
+    print(f"Results page written to: {page_path}")
 
     topic = settings.get("ntfy_topic")
     if topic and new_count > 0:
