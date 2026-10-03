@@ -1,0 +1,42 @@
+{
+  "reed_api_key": "",
+  "adzuna_app_id": "",
+  "adzuna_app_key": "",
+  "jooble_api_key": "",
+  "ntfy_topic": "",
+  "home_postcode": "WD6",
+  "notify_on_zero_results": true,
+  "default_radius_miles": 20,
+  "search_profiles": {
+    "Audit": {
+      "keywords": "accounting practice audit director",
+      "radius_miles": 20,
+      "min_salary": null,
+      "max_salary": null,
+      "include_remote_hybrid": true,
+      "require_title_match": true,
+      "require_audit": true,
+      "require_general_practice": false,
+      "require_ri": true,
+      "job_type": "",
+      "employment_type": "",
+      "max_age_days": null,
+      "sort_by": "fit"
+    },
+    "General Practice": {
+      "keywords": "accounting practice general practice director",
+      "radius_miles": 20,
+      "min_salary": null,
+      "max_salary": null,
+      "include_remote_hybrid": true,
+      "require_title_match": true,
+      "require_audit": false,
+      "require_general_practice": true,
+      "require_ri": false,
+      "job_type": "",
+      "employment_type": "",
+      "max_age_days": null,
+      "sort_by": "fit"
+    }
+  }
+}

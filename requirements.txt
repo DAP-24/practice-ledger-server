@@ -1,0 +1,9 @@
+requests>=2.31
+beautifulsoup4>=4.12
+
+# Needed for the JavaScript-rendered sites (Oscar Wood, Morgan McKinley,
+# TPF Recruitment, Curtis Recruitment, Pro-Recruitment). Unlike the
+# desktop app, this is NOT optional here — the GitHub Actions workflow
+# always installs the matching browser (see .github/workflows/), so
+# there's no manual second step the way there is on a desktop install.
+playwright>=1.40
