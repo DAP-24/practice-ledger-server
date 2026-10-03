@@ -27,5 +27,25 @@
   "place:watford": {
     "lat": 51.6553875,
     "lon": -0.3957425
+  },
+  "postcode:TN37 7SQ": {
+    "lat": 50.888084,
+    "lon": 0.550183
+  },
+  "place:united kingdom": {
+    "lat": 54.7023545,
+    "lon": -3.2765753
+  },
+  "place:manchester": {
+    "lat": 53.4424618,
+    "lon": -2.2324547
+  },
+  "place:sussex": {
+    "lat": 50.9445139,
+    "lon": -0.0622673
+  },
+  "place:kent": {
+    "lat": 51.2070749,
+    "lon": 0.7210362
   }
 }
