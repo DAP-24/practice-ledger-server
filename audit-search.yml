@@ -1,0 +1,64 @@
+name: Audit search
+
+# Two ways this runs, mirroring the two ways the desktop app's scheduled
+# search can be triggered:
+#   1. Automatically, every day, at the time below.
+#   2. Manually, any time, by tapping "Run workflow" here on GitHub's
+#      website or in the GitHub mobile app — this is what lets you
+#      trigger a check from your phone without your laptop at all.
+"on":
+  schedule:
+    # Cron times on GitHub Actions are always UTC, and GitHub does not
+    # shift them for UK daylight saving — this runs at 7:00am UK time in
+    # winter (GMT) and 8:00am UK time in summer (BST). If you want it
+    # closer to 7am year-round, change the hour by 1 around the March/
+    # October clock changes. The exact minute (07) is deliberately not a
+    # round number — GitHub Actions gets a lot of traffic right on the
+    # hour, so a few minutes past it tends to run closer to on time.
+    - cron: "7 7 * * *"
+  workflow_dispatch:
+    inputs:
+      radius_miles:
+        description: "Radius in miles (leave as 30, or change for just this one run)"
+        required: false
+        default: "30"
+        type: string
+
+permissions:
+  contents: write  # needed to commit the updated tracking/summary files back
+
+jobs:
+  run-audit-search:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install the browser needed for JavaScript-rendered sites
+        run: playwright install --with-deps chromium
+
+      - name: Run the Audit search
+        env:
+          REED_API_KEY: ${{ secrets.REED_API_KEY }}
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+          JOOBLE_API_KEY: ${{ secrets.JOOBLE_API_KEY }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          RADIUS_OVERRIDE_MILES: ${{ github.event.inputs.radius_miles }}
+        run: python scheduled_search.py "Audit"
+
+      - name: Save the results back to this repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add seen_jobs__audit.json geocode_cache.json search_history.json summaries/ docs/ 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "Audit search: $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push
