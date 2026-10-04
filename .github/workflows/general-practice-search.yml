@@ -54,4 +54,15 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add "seen_jobs__general_practice.json" geocode_cache.json search_history.json summaries/ docs/ 2>/dev/null || true
           git diff --cached --quiet || git commit -m "General Practice search: $(date -u +'%Y-%m-%d %H:%M UTC')"
-          git push
+                    # If the other search saved its results while this one was running,
+          # GitHub rejects a plain push. Pull their changes in first, then push
+          # again, retrying a few times before giving up.
+          for attempt in 1 2 3 4; do
+            if git pull --rebase --autostash -X theirs origin main && git push; then
+              exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 3))
+          done
+          echo "Could not save results after several attempts"
+          exit 1
