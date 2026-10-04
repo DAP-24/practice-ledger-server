@@ -1,0 +1,27 @@
+Practice Ledger (Audit) — scheduled check: Sunday 04 October 2026, 15:04
+Search: "accounting practice audit director"
+Total matches: 3  |  New since last run: 0
+
+No new matches since the last run.
+
+Source status this run:
+  Reed: ok
+  Adzuna: ok
+  Jooble: ok
+  Fletcher George: ok
+  Austin Rose: ok
+  Ambition: ok
+  The Accountancy Recruiters: ok
+  Howett Thorpe: ok
+  Rowland Recruitment: ok
+  Farrer Barnes: ok
+  GAAPweb (Audit): ok
+  Insite Recruitment: ok
+  ICAEW Jobs: error: 403 Client Error: Forbidden for url: https://jobs.icaew.com/jobs/accounting-practice/
+  ACCA Careers: error: 403 Client Error: Forbidden for url: https://jobs.accaglobal.com/landingpage/3165354/accountancy-practice-jobs/
+  Michael Page: ok
+  Oscar Wood: ok
+  Morgan McKinley: ok
+  TPF Recruitment: ok
+  Curtis Recruitment: ok
+  Pro-Recruitment: ok
