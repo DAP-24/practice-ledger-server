@@ -55,5 +55,9 @@
   "postcode:SW6 3UJ": {
     "lat": 51.467103,
     "lon": -0.209444
+  },
+  "place:blackpool, lancashire": {
+    "lat": 53.8179442,
+    "lon": -3.0509812
   }
 }
