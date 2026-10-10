@@ -59,5 +59,9 @@
   "place:blackpool, lancashire": {
     "lat": 53.8179442,
     "lon": -3.0509812
+  },
+  "place:northern ireland": {
+    "lat": 54.5859836,
+    "lon": -6.9591554
   }
 }
