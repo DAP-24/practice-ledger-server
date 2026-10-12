@@ -63,5 +63,9 @@
   "place:northern ireland": {
     "lat": 54.5859836,
     "lon": -6.9591554
+  },
+  "place:southampton": {
+    "lat": 50.9025349,
+    "lon": -1.404189
   }
 }
