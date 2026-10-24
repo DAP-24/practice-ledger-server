@@ -67,5 +67,9 @@
   "place:southampton": {
     "lat": 50.9025349,
     "lon": -1.404189
+  },
+  "place:liverpool": {
+    "lat": 53.3933411,
+    "lon": -2.9166389
   }
 }
