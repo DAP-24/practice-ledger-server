@@ -1,0 +1,38 @@
+Practice Ledger (General Practice) — scheduled check: Thursday 29 October 2026, 08:16
+Search: "accounting practice general practice director"
+Total matches: 2  |  New since last run: 2
+
+NEW MATCHES:
+------------------------------------------------------------
+* VAT Director - London
+  employer not disclosed — London | 12.2 mi
+  £110,000–£150,000 | fit 1 | source: Pro-Recruitment
+  https://www.pro-recruitment.co.uk/role-details/vat-director---london-2
+
+* Private Client Tax Director
+  employer not disclosed — London | 12.2 mi
+  £110,000–£160,000 | fit 1 | source: Pro-Recruitment
+  https://www.pro-recruitment.co.uk/role-details/private-client-tax-director-50
+
+
+Source status this run:
+  Reed: ok
+  Adzuna: ok
+  Jooble: ok
+  Fletcher George: ok
+  Austin Rose: ok
+  Ambition: ok
+  The Accountancy Recruiters: ok
+  Howett Thorpe: zero_results
+  Rowland Recruitment: ok
+  Farrer Barnes: ok
+  GAAPweb (Audit): ok
+  Insite Recruitment: ok
+  ICAEW Jobs: error: 403 Client Error: Forbidden for url: https://jobs.icaew.com/jobs/accounting-practice/
+  ACCA Careers: error: 403 Client Error: Forbidden for url: https://jobs.accaglobal.com/landingpage/3165354/accountancy-practice-jobs/
+  Michael Page: ok
+  Oscar Wood: zero_results
+  Morgan McKinley: ok
+  TPF Recruitment: ok
+  Curtis Recruitment: ok
+  Pro-Recruitment: ok

@@ -71,5 +71,9 @@
   "place:liverpool": {
     "lat": 53.3933411,
     "lon": -2.9166389
+  },
+  "place:crawley": {
+    "lat": 51.1103444,
+    "lon": -0.1801094
   }
 }
