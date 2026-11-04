@@ -1,0 +1,33 @@
+Practice Ledger (Audit) — scheduled check: Wednesday 04 November 2026, 15:22
+Search: "accounting practice audit director"
+Total matches: 4  |  New since last run: 1
+
+NEW MATCHES:
+------------------------------------------------------------
+* Audit Director
+  McGinnis Loy Associates Ltd — SW63UH | 13.4 mi
+  £80,000.0–£110,000.0 | fit 4 | source: Reed
+  https://www.reed.co.uk/jobs/audit-director/57521870
+
+
+Source status this run:
+  Reed: ok
+  Adzuna: ok
+  Jooble: ok
+  Fletcher George: ok
+  Austin Rose: ok
+  Ambition: ok
+  The Accountancy Recruiters: ok
+  Howett Thorpe: zero_results
+  Rowland Recruitment: ok
+  Farrer Barnes: ok
+  GAAPweb (Audit): ok
+  Insite Recruitment: ok
+  ICAEW Jobs: error: 403 Client Error: Forbidden for url: https://jobs.icaew.com/jobs/accounting-practice/
+  ACCA Careers: error: 403 Client Error: Forbidden for url: https://jobs.accaglobal.com/landingpage/3165354/accountancy-practice-jobs/
+  Michael Page: ok
+  Oscar Wood: zero_results
+  Morgan McKinley: ok
+  TPF Recruitment: ok
+  Curtis Recruitment: ok
+  Pro-Recruitment: ok
