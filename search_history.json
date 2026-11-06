@@ -590,5 +590,13 @@
     "new_count": 1,
     "scheduled": true,
     "profile": "Audit"
+  },
+  {
+    "timestamp": "2026-11-06T14:59:57.589089+00:00",
+    "keywords": "accounting practice audit director",
+    "count": 5,
+    "new_count": 0,
+    "scheduled": true,
+    "profile": "Audit"
   }
 ]
