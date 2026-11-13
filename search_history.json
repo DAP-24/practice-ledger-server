@@ -686,5 +686,13 @@
     "new_count": 0,
     "scheduled": true,
     "profile": "General Practice"
+  },
+  {
+    "timestamp": "2026-11-13T15:20:09.334913+00:00",
+    "keywords": "accounting practice audit director",
+    "count": 6,
+    "new_count": 0,
+    "scheduled": true,
+    "profile": "Audit"
   }
 ]
