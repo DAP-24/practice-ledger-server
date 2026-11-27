@@ -6,5 +6,17 @@
   "privateclienttaxdirector|london": {
     "first_seen": "2026-10-29T08:16:00.465495+00:00",
     "job_title": "Private Client Tax Director"
+  },
+  "internationaltaxdirectorbig4aifocusedclients|london": {
+    "first_seen": "2026-11-27T17:31:50.999281+00:00",
+    "job_title": "International Tax Director - Big 4 - AI focused clients"
+  },
+  "taxdirectorprivateequity|london": {
+    "first_seen": "2026-11-27T17:31:50.999281+00:00",
+    "job_title": "Tax Director - Private Equity"
+  },
+  "taxtechnicaldirector|london": {
+    "first_seen": "2026-11-27T17:31:50.999281+00:00",
+    "job_title": "Tax Technical Director"
   }
 }
